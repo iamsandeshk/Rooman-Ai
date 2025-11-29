@@ -37,10 +37,10 @@ Rooman AI Support Assistant is a full-stack web application that leverages Googl
        │ 3. Fetch chat history
        ▼
 ┌─────────────────────┐
-│   MySQL Database    │
+│   SQLite Database   │
+│  (chat_history.db)  │
 │                     │
-│ • chat_history      │
-│ • recommendations   │
+│ • chats table       │
 └──────┬──────────────┘
        │ 4. Returns history
        ▼
@@ -111,7 +111,7 @@ Rooman AI Support Assistant is a full-stack web application that leverages Googl
 - **Language Support**: Primarily optimized for English
 - **No File Uploads**: Cannot process images or documents
 - **Offline Mode**: Requires internet connection for AI responses
-- **Database**: Local MySQL setup required (not cloud-ready by default)
+- **Database**: Uses SQLite (single file, not suitable for high-concurrency scenarios)
 
 ### Known Issues
 - Large conversation histories may slow down response time
@@ -129,13 +129,13 @@ Rooman AI Support Assistant is a full-stack web application that leverages Googl
 ### Backend
 - **Node.js** (v18+) - Runtime environment
 - **Express.js** - Web framework
-- **MySQL2** - Database driver
+- **SQLite3** - Lightweight embedded database
 - **@google/generative-ai** - Gemini AI SDK
 - **dotenv** - Environment variable management
 - **cors** - Cross-origin resource sharing
 
 ### Database
-- **MySQL** (v8.0+) - Relational database for chat history
+- **SQLite** (v3) - Embedded SQL database for chat history
 
 ### AI/API
 - **Google Gemini 1.5 Flash** - Large language model
@@ -150,10 +150,11 @@ Rooman AI Support Assistant is a full-stack web application that leverages Googl
 ### Prerequisites
 ```bash
 - Node.js (v18 or higher)
-- MySQL (v8.0 or higher)
 - Gemini API Key (from Google AI Studio)
 - Git
 ```
+
+**Note:** SQLite is included as a dependency and requires no separate installation.
 
 ### Step 1: Clone Repository
 ```bash
@@ -166,57 +167,17 @@ cd Rooman-Ai
 npm install
 ```
 
-### Step 3: Set Up MySQL Database
-```sql
--- Create database
-CREATE DATABASE rooman_support;
-
--- Use database
-USE rooman_support;
-
--- Create chat_history table
-CREATE TABLE chat_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    session_id VARCHAR(255) NOT NULL,
-    role ENUM('user', 'bot') NOT NULL,
-    message TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_session (session_id),
-    INDEX idx_created (created_at)
-);
-
--- Create recommendations table
-CREATE TABLE recommendations (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    text VARCHAR(255) NOT NULL,
-    category VARCHAR(100),
-    priority INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Insert sample recommendations
-INSERT INTO recommendations (text, category, priority) VALUES
-('What courses do you offer?', 'courses', 1),
-('Tell me about certifications', 'certifications', 2),
-('Placement assistance details', 'placement', 3),
-('Course duration and fees', 'fees', 4);
-```
-
-### Step 4: Configure Environment Variables
+### Step 3: Configure Environment Variables
 Create a `.env` file in the root directory:
 ```env
 # Gemini API Configuration
 GEMINI_API_KEY=your_gemini_api_key_here
 
-# MySQL Database Configuration
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_mysql_password
-DB_NAME=rooman_support
-
 # Server Configuration
 PORT=3000
 ```
+
+**Note:** SQLite database (`chat_history.db`) will be automatically created when you first run the server. No additional database configuration needed!
 
 **Get Gemini API Key:**
 1. Visit https://makersuite.google.com/app/apikey
@@ -224,15 +185,16 @@ PORT=3000
 3. Create new API key
 4. Copy and paste into `.env` file
 
-### Step 5: Start the Server
+### Step 4: Start the Server
 ```bash
 # Development mode
 node server.js
 
 # The server will start on http://localhost:3000
+# SQLite database will be automatically created
 ```
 
-### Step 6: Access the Application
+### Step 5: Access the Application
 Open your browser and navigate to:
 ```
 http://localhost:3000
@@ -251,15 +213,9 @@ http://localhost:3000
    - Start Command: `node server.js`
 5. Add Environment Variables:
    - `GEMINI_API_KEY`
-   - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
 6. Deploy
 
-#### Database Deployment
-1. Create MySQL database on Render or use:
-   - [PlanetScale](https://planetscale.com) (Free tier)
-   - [Railway](https://railway.app) (MySQL support)
-   - [Clever Cloud](https://www.clever-cloud.com)
-2. Update environment variables with hosted DB credentials
+**Note:** SQLite database file (`chat_history.db`) will be stored on the server's filesystem. For production with multiple instances, consider migrating to PostgreSQL or MongoDB.
 
 ### Option 2: Deploy to Railway
 ```bash
