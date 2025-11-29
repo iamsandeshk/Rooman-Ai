@@ -202,40 +202,75 @@ http://localhost:3000
 
 ## 🚀 Deployment Guide
 
-### Option 1: Deploy to Render (Recommended)
+### Deploy to Vercel (Recommended)
 
-#### Backend Deployment
-1. Create account on [Render.com](https://render.com)
-2. Create new **Web Service**
-3. Connect GitHub repository
-4. Configure:
-   - Build Command: `npm install`
-   - Start Command: `node server.js`
-5. Add Environment Variables:
-   - `GEMINI_API_KEY`
-6. Deploy
+Vercel is the easiest way to deploy this full-stack application!
 
-**Note:** SQLite database file (`chat_history.db`) will be stored on the server's filesystem. For production with multiple instances, consider migrating to PostgreSQL or MongoDB.
+#### Prerequisites
+1. Create account on [Vercel.com](https://vercel.com)
+2. Install Vercel CLI (optional):
+   ```bash
+   npm i -g vercel
+   ```
 
-### Option 2: Deploy to Railway
+#### Method 1: Deploy via Vercel Dashboard (Easiest)
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import your GitHub repository: `iamsandeshk/Rooman-Ai`
+3. Configure Project:
+   - **Framework Preset**: Other
+   - **Build Command**: Leave empty
+   - **Output Directory**: Leave empty
+   - **Install Command**: `npm install`
+4. Add Environment Variables:
+   - Click "Environment Variables"
+   - Add: `GEMINI_API_KEY` = `your_gemini_api_key_here`
+5. Click **Deploy**
+6. Your app will be live at: `https://your-project.vercel.app`
+
+#### Method 2: Deploy via CLI
 ```bash
-# Install Railway CLI
-npm i -g @railway/cli
+# Login to Vercel
+vercel login
 
-# Login to Railway
-railway login
+# Deploy to production
+vercel --prod
 
-# Initialize project
-railway init
+# Add environment variable
+vercel env add GEMINI_API_KEY
+# Paste your API key when prompted
 
-# Add environment variables
-railway variables set GEMINI_API_KEY=your_key_here
-
-# Deploy
-railway up
+# Redeploy with new environment variable
+vercel --prod
 ```
 
-### Option 3: Docker Deployment
+#### Important Notes for Vercel:
+- ✅ **Serverless Functions**: Works perfectly with Node.js backend
+- ✅ **Static Files**: Frontend automatically served
+- ✅ **SQLite Database**: Persists during session (ephemeral on redeployment)
+- ⚠️ **Database Limitation**: SQLite resets on each deployment. For persistent storage, consider:
+  - **Vercel Postgres** (Recommended for production)
+  - **MongoDB Atlas** (Free tier available)
+  - **PlanetScale** (MySQL-compatible)
+
+#### Upgrade to Persistent Database (Optional)
+For production use with persistent data:
+
+**Option A: Vercel Postgres**
+```bash
+# Install Vercel Postgres
+vercel postgres create
+
+# Update your code to use Vercel Postgres
+# Add connection string to environment variables
+```
+
+**Option B: MongoDB Atlas**
+1. Create free cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas)
+2. Get connection string
+3. Add to Vercel environment variables: `MONGODB_URI`
+4. Update `src/db.js` to use MongoDB
+
+### Alternative: Docker Deployment
 ```dockerfile
 # Create Dockerfile
 FROM node:18-alpine
