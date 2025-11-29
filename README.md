@@ -247,6 +247,7 @@ vercel --prod
 - ✅ **Serverless Functions**: Works perfectly with Node.js backend
 - ✅ **Static Files**: Frontend automatically served
 - ✅ **SQLite Database**: Persists during session (ephemeral on redeployment)
+- ⚠️ **Deprecation Warnings**: You may see npm warnings during deployment (npmlog, rimraf, glob) - these are from sqlite3 dependencies and won't affect functionality
 - ⚠️ **Database Limitation**: SQLite resets on each deployment. For persistent storage, consider:
   - **Vercel Postgres** (Recommended for production)
   - **MongoDB Atlas** (Free tier available)
