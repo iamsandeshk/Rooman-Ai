@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 const { getChatResponse } = require('./src/gemini');
 require('dotenv').config();
 
@@ -9,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // API Endpoint to handle chat
 app.post('/api/chat', async (req, res) => {
@@ -40,6 +41,11 @@ app.get('/api/recommendations', (req, res) => {
             "Where are your centers located?"
         ]
     });
+});
+
+// Serve index.html for root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // For local development
